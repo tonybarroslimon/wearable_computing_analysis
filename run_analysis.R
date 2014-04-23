@@ -7,7 +7,7 @@ enterData <- function(file_name, path_name) {
         
         dataColumns <- read.table("features.txt", header = FALSE, as.is = TRUE, col.names = c("MeasureID", "MeasureName"))
         
-        file_path <- file.path(path_name, paste("X_", file_name, ".txt", sept = ""))
+        file_path <- file.path(path_name, paste("X_", file_name, ".txt", sep = ""))
         xFile <- read.table(file_path, header = FALSE, col.names = dataColumns$MeasureName)
         
         sub_data_columns <- grep(".*mean\\(\\) |.*std\\(\\)", dataColumns$MeasureName)
