@@ -1,3 +1,5 @@
+library(reshape2)
+
 ## The function enterData creates the inital data frame used to merge the data together
 ## when it is passed the name of the file and the path where that file can be located. 
 ## This function also subsets the data to pull out only the mean and standard deviation
@@ -44,39 +46,49 @@ trainData <- function() {
         enterData("train", "train")
 }
 
+# The mergeData function combines both the train and test data. It also makes the names of columns more descriptive
 mergeData <- function() {
+        
+        # binds the test and train data and sets it to the data variable
         data <- rbind(testData(), trainData())
+        
+        # Takes the column names and changes them so they look nicer
         colNames <- colnames(data)
         colNames <- gsub("\\,+mean\\.+", colNames, replacement = "Mean")
         colNames <- gsub("\\,+std\\,+", colNames, replacement = "Std")
         colnames(data) <- colNames
+        
+        # Returns the merged data
         data
 }
 
+# The addActivityLabel function creates a separate column for the activity names
 addActivityLabel <- function(data) {
-        activity_labels <- read.table("activity_labels.txt", header=F, as.is=T, col.names=c("ActivityID", "ActivityName"))
-        activity_labels$ActivityName <- as.factor(activity_labels$ActivityName)
-        data_labeled <- merge(data, activity_labels)
-        data_labeled
+        activityLabels <- read.table("activity_labels.txt", header = FALSE, as.is = TRUE, col.names=c("ActivityID", "ActivityName"))
+        activityLabels$ActivityName <- as.factor(activityLabels$ActivityName)
+        dataLabeled <- merge(data, activityLabels)
+        dataLabeled
 }
 
+# The getMergedLabeledData function merges the train and test data and adds the activity label as a new column.
 getMergedLabeledData <- function() {
         addActivityLabel(mergeData())
 }
 
+# The getData function requires the reshape2 package in order to run. This function melts the data set.
 getData <- function(merged_labeled_data) {
-        library(reshape2)
         
-        id_vars = c("ActivityID", "ActivityName", "SubjectID")
-        measure_vars = setdiff(colnames(merged_labeled_data), id_vars)
-        melted_data <- melt(merged_labeled_data, id=id_vars, measure.vars=measure_vars)
+        id_variables = c("ActivityID", "ActivityName", "SubjectID")
+        measure_variables = setdiff(colnames(merged_labeled_data), id_variables)
+        melted_data <- melt(merged_labeled_data, id = id_vars, measure.vars = measure_variables)
         
         dcast(melted_data, ActivityName + SubjectID ~ variable, mean)    
 }
 
-createDataFile <- function(fname) {
-        tidy_data <- getData(getMergedLabeledData())
-        write.table(tidy_data, fname)
+# The createDataFile function creates the final data set and saves it out to a file.
+createDataFile <- function(file_output_name) {
+        final_data <- getData(getMergedLabeledData())
+        write.table(final_data, file_output_name)
 }
 
 createDataFile("wearable_computing_analysis.txt")
