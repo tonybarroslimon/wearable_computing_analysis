@@ -1,10 +1,9 @@
 library(reshape2)
 
-## The function enterData creates the inital data frame used to merge the data together
-## when it is passed the name of the file and the path where that file can be located. 
-## This function also subsets the data to pull out only the mean and standard deviation
-## measurements.
-
+# The function enterData creates the inital data frame used to merge the data together
+# when it is passed the name of the file and the path where that file can be located. 
+# This function also subsets the data to pull out only the mean and standard deviation
+# measurements.
 enterData <- function(file_name, path_name) {
         
         # creates the path to the file with the 'y' name and loads that information as a data table.
